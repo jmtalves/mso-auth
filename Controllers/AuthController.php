@@ -18,7 +18,8 @@ class AuthController
         if (empty($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
         }
-        
+        $jwt = Encrypt::encryptJwt("a4b728c805a50b7d81115ce5d10a39d8-1-0" );
+            var_dump($jwt);die();
         if (empty($_SERVER['HTTP_AUTHORIZATION'])) {
             Response::sendResponse(401, ["msg" => "Authentication not received"]);
         }

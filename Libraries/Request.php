@@ -24,7 +24,7 @@ class Request
                 ]
             );
             return ["status"=>$response->getStatusCode(), "body"=>json_decode($response->getBody(), true)];
-        } catch (\GuzzleHttp\Exception\RequestException $e) {var_dump($e->getMessage());die();
+        } catch (\GuzzleHttp\Exception\RequestException $e) { 
             $response = $e->getResponse();
             return ["status"=>$response->getStatusCode(), "body"=>json_decode($response->getBody()->getContents(), true)];
         }
