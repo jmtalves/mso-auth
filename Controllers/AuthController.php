@@ -15,7 +15,9 @@ class AuthController
      */
     public function index()
     {
-        
+        if (empty($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+            $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+        }
         $ha = base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)); 
         list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', $ha);
         
@@ -23,8 +25,8 @@ class AuthController
         $authorization = Encrypt::encryptJwt("a4b728c805a50b7d81115ce5d10a39d8-1-0-auth");
 
         $a = "http://".getenv('URL_LOAD_BALANCE')."/api/user/".$_SERVER['PHP_AUTH_USER'];
-        var_dump(Request::callApi("GET", $authorization, $a ));die();
-
+       
+        Response::sendResponse(200, ["msg" => Request::callApi("GET", $authorization, $a )]);
         /*$user = User::find("*", ["email" => $_SERVER['PHP_AUTH_USER'], "password" => $auth_pw]);
         if (!$user) {
             Response::sendResponse(401, ["msg" => "User not found"]);
