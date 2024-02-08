@@ -1,0 +1,51 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+
+    steps:
+  
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker images
+        run: docker-compose -f docker-compose.yml up -d
+        working-directory: ./
+
+      - name: Wait for services to start
+        run: |
+          docker images
+          sleep 10
+
+      - name: Install Composer dependencies
+        run: composer install
+
+
+
+      - name: Tag and Push Nginx image
+        run: |
+          docker tag nginx:alpine jmtalves/mso-auth:nginx
+          docker build  -f ./phpdocker/nginx/Dockerfile -t jmtalves/mso-auth:nginx .
+          docker push jmtalves/mso-auth:nginx
+        working-directory: ./
+
+
+      - name: Tag and Push PHP-FPM image
+        working-directory: ./
+        run: |
+          docker tag mso-auth_php-fpm:latest jmtalves/mso-auth:php-fpm
+          docker build  -f ./phpdocker/php-fpm/Dockerfile -t jmtalves/mso-auth:php-fpm . 
+          docker push jmtalves/mso-auth:php-fpm
+        
