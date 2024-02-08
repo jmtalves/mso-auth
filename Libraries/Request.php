@@ -16,10 +16,13 @@ class Request
                 $method,
                 $url,
                 [
+                    
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'Authorization' => $authorization, 
+                        'Authorization' => $authorization,
                     ],
+                    'verify' => false,
+                    'allow_redirects' => true,
                     
                 ]
             );
