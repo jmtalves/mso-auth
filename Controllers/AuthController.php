@@ -29,8 +29,8 @@ class AuthController
         
 
         $authorization = Encrypt::encryptJwt("a4b728c805a50b7d81115ce5d10a39d8-1-0-auth");
-
-        $a = "http://172.233.34.152/api/user/".$_SERVER['PHP_AUTH_USER'];
+ 
+        $a = "http://".getenv('URL_LOAD_BALANCE')."/api/user/".$_SERVER['PHP_AUTH_USER'];
        $r = Request::callApi("GET", $authorization, $a );
         Response::sendResponse($r["status"], (array)$r );
         /*$user = User::find("*", ["email" => $_SERVER['PHP_AUTH_USER'], "password" => $auth_pw]);
