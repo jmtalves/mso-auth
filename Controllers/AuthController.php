@@ -18,6 +18,7 @@ class AuthController
         if (empty($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
         }
+        Response::sendResponse(200, $_SERVER);die();
         $ha = base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)); 
         list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', $ha);
         
