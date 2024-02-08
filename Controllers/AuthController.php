@@ -18,8 +18,11 @@ class AuthController
         if (empty($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
         }
-        Response::sendResponse(200, $_SERVER);die();
-        $ha = base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6)); 
+        
+        if (empty($_SERVER['HTTP_AUTHORIZATION'])) {
+            Response::sendResponse(401, ["msg" => "Authentication not received"]);
+        }
+        $ha = base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6));
         list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', $ha);
         
 
@@ -27,7 +30,7 @@ class AuthController
 
         $a = "http://".getenv('URL_LOAD_BALANCE')."/api/user/".$_SERVER['PHP_AUTH_USER'];
        
-        Response::sendResponse(200, ["msg" => Request::callApi("GET", $authorization, $a )]);
+        Response::sendResponse(200, ["a"=>$a,"msg" => Request::callApi("GET", $authorization, $a )]);
         /*$user = User::find("*", ["email" => $_SERVER['PHP_AUTH_USER'], "password" => $auth_pw]);
         if (!$user) {
             Response::sendResponse(401, ["msg" => "User not found"]);
