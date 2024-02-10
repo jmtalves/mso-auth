@@ -43,12 +43,13 @@ class Encrypt
     public static function encryptJwt($string)
     {
         $time = time();
+        $iatClaim = $time-10;
         $exp = $time + 6000;
         $payload = [
             'sub' => $string,
             'iss' => $_SERVER['HTTP_HOST'] ?? 'local',
             'aud' => $_SERVER['HTTP_USER_AGENT'] ?? 'local',
-            'iat' => $time,
+            'iat' => $iatClaim,
             'exp' => $exp
         ];
         $headers = [];

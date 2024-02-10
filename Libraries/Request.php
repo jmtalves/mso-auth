@@ -9,7 +9,7 @@ class Request
     /**
      * call Api
      */
-    public static function callApi(string $method, array $authorization, string $url){
+    public static function callApi(string $method, string $authorization, string $url){
         $client = new Client();
         try {
             $response = $client->request(
@@ -19,10 +19,8 @@ class Request
                     
                     'headers' => [
                         'Content-Type' => 'application/json',
-                        'Authorization' => $authorization,
-                    ],
-                    'verify' => false,
-                    'allow_redirects' => true,
+                        'Authorization' => "".$authorization,
+                    ]
                     
                 ]
             );

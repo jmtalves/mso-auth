@@ -18,31 +18,27 @@ class AuthController
         if (empty($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
         }
-        $jwt = Encrypt::encryptJwt("a4b728c805a50b7d81115ce5d10a39d8-1-0" );
-       
-        
         if (empty($_SERVER['HTTP_AUTHORIZATION'])) {
             Response::sendResponse(401, ["msg" => "Authentication not received"]);
         }
         $ha = base64_decode(substr($_SERVER['HTTP_AUTHORIZATION'], 6));
         list($_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW']) = explode(':', $ha);
-        
-
-        $authorization = Encrypt::encryptJwt("a4b728c805a50b7d81115ce5d10a39d8-1-0-auth");
- 
-        $a = "http://".getenv('URL_LOAD_BALANCE')."/api/user/".$_SERVER['PHP_AUTH_USER'];
-       $r = Request::callApi("GET", $authorization, $a );
-        Response::sendResponse($r["status"], (array)$r );
-        /*$user = User::find("*", ["email" => $_SERVER['PHP_AUTH_USER'], "password" => $auth_pw]);
-        if (!$user) {
-            Response::sendResponse(401, ["msg" => "User not found"]);
+        $authorization = Encrypt::encryptJwt($_SERVER['PHP_AUTH_USER'] . "-1-0-auth");
+        $url = "http://" . getenv('URL_LOAD_BALANCE') . "/api/user/" . $_SERVER['PHP_AUTH_USER'];
+        $user_info = Request::callApi("GET", $authorization['token'], $url);
+        if ($user_info["status"] != 200 || !isset($user_info['body']["info"][0]["password"])) {
+            Response::sendResponse($user_info["status"], $user_info["body"]);
         }
-        Logs::updateInfo(["iduser" => $user[0]->iduser, "tokenvalidate" => 1]);
-        $jwt = Encrypt::encryptJwt($user[0]->apikey);
-        if (!empty($jwt['error'])) {
-            Response::sendResponse(503, ["msg" => $jwt['error']]);
+        if (password_verify($_SERVER['PHP_AUTH_PW'], $user_info['body']["info"][0]["password"])) {
+            $user = $user_info['body']["info"][0];
+            $jwt = Encrypt::encryptJwt($user["apikey"] . "-" . $user["iduser"] . "-" . $user["type"]);
+            if (!empty($jwt['error'])) {
+                Response::sendResponse(503, ["msg" => $jwt['error']]);
+            } else {
+                Response::sendResponse(200, ["token" => $jwt["token"], "expire" => $jwt["expire"]]);
+            }
         } else {
-            Response::sendResponse(200, ["token" => $jwt["token"], "expire" => $jwt["expire"]]);
-        }*/
+            Response::sendResponse(401, ["msg" => "Password invalid"]);
+        }
     }
 }
