@@ -6,14 +6,17 @@ use Libraries\Response;
 use Libraries\Encrypt;
 use Libraries\Request;
 
+/*
+ * class AuthController
+ */
 class AuthController
 {
     /**
      * index
-     *
+     * @param array $params params get
      * @return void
      */
-    public function index()
+    public function index(array $params = [])
     {
         if (empty($_SERVER['HTTP_AUTHORIZATION']) && !empty($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
             $_SERVER['HTTP_AUTHORIZATION'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];

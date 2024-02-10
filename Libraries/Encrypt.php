@@ -43,7 +43,7 @@ class Encrypt
     public static function encryptJwt($string)
     {
         $time = time();
-        $iatClaim = $time-10;
+        $iatClaim = $time - 10;
         $exp = $time + 6000;
         $payload = [
             'sub' => $string,
