@@ -6,6 +6,9 @@ use Libraries\Response;
 use Libraries\Encrypt;
 use Libraries\Request;
 
+/*
+ * class AuthController
+ */
 class AuthController
 {
     /**
